@@ -7,7 +7,7 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
-import com.cicconi.popularmovies.model.Movie;
+import com.cicconi.popularmovies.model.OldMovie;
 import com.squareup.picasso.Picasso;
 
 public class DetailsActivity extends AppCompatActivity {
@@ -37,7 +37,7 @@ public class DetailsActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         if (intent.hasExtra(EXTRA_MOVIE)) {
-            Movie movie = (Movie) intent.getExtras().getSerializable(EXTRA_MOVIE);
+            OldMovie movie = (OldMovie) intent.getExtras().getSerializable(EXTRA_MOVIE);
 
             if(null == movie) {
                 mMovieLayout.setVisibility(View.GONE);
@@ -48,11 +48,11 @@ public class DetailsActivity extends AppCompatActivity {
         }
     }
 
-    private void loadMovie(Movie movie) {
+    private void loadMovie(OldMovie movie) {
         String title = movie.getTitle();
-        String overview = movie.getOverview();
+        String overview = movie.getSynopsis();
         String releaseDate = movie.getReleaseDate();
-        Double voteAverage = movie.getVoteAverage();
+        String voteAverage = movie.getRating();
 
         if(null != title) {
             mTitle.setText(title);
@@ -79,7 +79,7 @@ public class DetailsActivity extends AppCompatActivity {
         }
 
         Picasso.with(this)
-            .load(IMAGE_URL + movie.getPosterPath())
+            .load(IMAGE_URL + movie.getImage())
             .placeholder(R.drawable.placeholder)
             .error(R.drawable.placeholder)
             .into(mThumbnail);

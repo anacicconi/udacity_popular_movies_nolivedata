@@ -14,14 +14,11 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.cicconi.popularmovies.adapter.MovieAdapter;
 import com.cicconi.popularmovies.async.FetchMovieTask;
-import com.cicconi.popularmovies.model.Movie;
 import com.cicconi.popularmovies.model.OldMovie;
-import com.cicconi.popularmovies.viewmodel.MovieViewModel;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import java.util.List;
 
@@ -34,8 +31,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     private RecyclerView mRecyclerView;
     private MovieAdapter mMovieAdapter;
     private GridLayoutManager layoutManager;
-
-    private MovieViewModel viewModel;
 
     private ProgressBar mLoadingIndicator;
     private TextView mErrorMessage;
@@ -63,8 +58,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         mMovieAdapter = new MovieAdapter(this);
         mRecyclerView.setAdapter(mMovieAdapter);
 
-        viewModel = new ViewModelProvider(this).get(MovieViewModel.class);
-
         loadMovies(FetchMovieTask.SORT_POPULAR, firstPage);
 
         handleRecyclerViewScroll();
@@ -84,7 +77,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
                             if(page != lastPage) {
                                 page = page + 1;
                                 loadMovies(FetchMovieTask.SORT_POPULAR, page);
-                                //viewModel.setPage(page);
                             }
                         }
                     }
@@ -102,11 +94,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
             .doOnNext(i -> Log.i(TAG, String.format("Thread loadMovies 2: %s", Thread.currentThread().getName())))
             .doOnNext(result -> loadFinish(result, page))
             .subscribe();
-
-        /*viewModel.getPopularMovies().observe(this, movies -> {
-            Log.i(TAG, "live data changed");
-            loadFinish(movies, page);
-        });*/
     }
 
     private void loadStart() {
@@ -120,8 +107,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
             showMovieView();
 
             mMovieAdapter.setMoviesData(movies, page);
-
-            //mRecyclerView.post(() -> mMovieAdapter.setMoviesData(movies, page));
 
         } else {
             showErrorMessage();
@@ -164,7 +149,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         int id = item.getItemId();
 
         if (id == R.id.action_sort_popular) {
-            //loadMovies(FetchMovieTask.SORT_POPULAR, firstPage);
+            loadMovies(FetchMovieTask.SORT_POPULAR, firstPage);
             mRecyclerView.scrollToPosition(0);
 
             enableMenuItem(mMainMenu.findItem(R.id.action_sort_popular));
@@ -174,7 +159,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         }
 
         if (id == R.id.action_sort_rating) {
-            //loadMovies(FetchMovieTask.SORT_RATING, firstPage);
+            loadMovies(FetchMovieTask.SORT_RATING, firstPage);
             mRecyclerView.scrollToPosition(0);
 
             enableMenuItem(mMainMenu.findItem(R.id.action_sort_rating));
